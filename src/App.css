@@ -36,3 +36,9 @@
     transform: rotate(360deg);
   }
 }
+
+@font-face {
+  font-family: "BungeeTint";
+  src: local("BungeeTint"),
+    url(./public/fonts/BungeeTint-Regular.ttf) format("opentype");
+}
