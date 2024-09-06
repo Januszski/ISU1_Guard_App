@@ -39,15 +39,15 @@ function SimpleDialog({ onClose, selectedValue, open, cellNumber }) {
       <Dialog onClose={handleClose} open={open}>
         <DialogTitle>Prisoners in cell #{cellNumber}</DialogTitle>
         <List sx={{ pt: 0 }}>
-          {prisoners.map((email) => (
-            <ListItem disableGutters key={email}>
-              <ListItemButton onClick={() => handleListItemClick(email)}>
+          {prisoners.map((prisoner) => (
+            <ListItem disableGutters key={prisoner}>
+              <ListItemButton onClick={() => handleListItemClick(prisoner)}>
                 <ListItemAvatar>
                   <Avatar sx={{ bgcolor: grey[900], color: orange[600] }}>
                     <PersonIcon />
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={email} />
+                <ListItemText primary={prisoner} />
               </ListItemButton>
             </ListItem>
           ))}

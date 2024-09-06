@@ -45,7 +45,7 @@ export default function BasicGrid() {
             sx={{
               flex: "1 1 calc(25% - 16px)", // Make each card take up 25% of the container with margin
               margin: "20px", // Add some margin between the cards
-              minWidth: "200px", // Ensure a minimum width for the cards
+              // minWidth: "200px", // Ensure a minimum width for the cards
             }}
           >
             <CellCard cellNumber={cellNumber} />

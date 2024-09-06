@@ -8,6 +8,10 @@ import { useAtom } from "jotai";
 import { headerButtonAtom } from "./atom";
 import CellGrid from "components/ManageCells/CellGrid";
 import ManageCellsPage from "components/ManageCells/ManageCellsPage";
+import PrisonerGrid from "components/OverseePrisoners/PrisonerGrid";
+import OverseePrisonser from "components/OverseePrisoners/OverseePrisonser";
+import CameraMonitoring from "components/ViewCameras/CameraMonitoring";
+import Inbox from "components/ViewMessages/Inbox";
 
 function App() {
   invoke("greet", { name: "whatever" }).then((response) =>
@@ -19,6 +23,9 @@ function App() {
     <div className='App'>
       <Header />
       {buttonSelected === "cells" && <ManageCellsPage />}
+      {buttonSelected === "prisoners" && <OverseePrisonser />}
+      {buttonSelected === "cameras" && <CameraMonitoring />}
+      {buttonSelected === "inbox" && <Inbox />}
     </div>
   );
 }

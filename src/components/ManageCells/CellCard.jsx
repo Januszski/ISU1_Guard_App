@@ -51,7 +51,7 @@ export default function Component({ cellNumber }) {
   return (
     // <div className='flex items-center justify-center min-h-screen bg-gray-900 p-4'>
     // <div className='w-full max-w-md'>
-    <div className='bg-gradient-to-b from-gray-700 to-gray-800 rounded-lg shadow-lg overflow-hidden'>
+    <div className='bg-gradient-to-b from-gray-700 to-gray-800 rounded-lg shadow-lg overflow-hidden min-w-min'>
       {/* Cell interior */}
       <div className='relative h-52 bg-gradient-to-b from-gray-600 to-gray-700 p-4'>
         <CellBars isLocked={isLocked} />

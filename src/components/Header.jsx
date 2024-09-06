@@ -19,10 +19,13 @@ import { ThemeProvider } from "@emotion/react";
 import { Button } from "@mui/material";
 import { ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import HeaderButton from "./HeaderButton";
+import { useAtom } from "jotai";
+import { headerButtonAtom } from "../atom";
 
 export default function PrimarySearchAppBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [buttonSelected, setButtonSelected] = useAtom(headerButtonAtom);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -42,6 +45,10 @@ export default function PrimarySearchAppBar() {
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
+  };
+
+  const handleMessagesClick = () => {
+    setButtonSelected("inbox");
   };
 
   const theme = createTheme({
@@ -160,7 +167,6 @@ export default function PrimarySearchAppBar() {
             <span className='p-1' />
             <HeaderButton buttonLabel={"prisoners"} />
             <span className='p-1' />
-
             <HeaderButton buttonLabel={"cameras"} />
 
             <Box sx={{ flexGrow: 1 }} />
@@ -169,6 +175,7 @@ export default function PrimarySearchAppBar() {
                 size='large'
                 aria-label='show 4 new mails'
                 color='inherit'
+                onClick={handleMessagesClick}
               >
                 <Badge
                   badgeContent={4}
@@ -182,23 +189,7 @@ export default function PrimarySearchAppBar() {
                   <MailIcon />
                 </Badge>
               </IconButton>
-              <IconButton
-                size='large'
-                aria-label='show 17 new notifications'
-                color='inherit'
-              >
-                <Badge
-                  badgeContent={5}
-                  sx={{
-                    "& .MuiBadge-badge": {
-                      backgroundColor: "purple",
-                      color: "white",
-                    },
-                  }}
-                >
-                  <NotificationsIcon />
-                </Badge>
-              </IconButton>
+
               <IconButton
                 size='large'
                 edge='end'

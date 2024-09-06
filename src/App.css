@@ -42,3 +42,8 @@
   src: local("BungeeTint"),
     url(./public/fonts/BungeeTint-Regular.ttf) format("opentype");
 }
+
+@font-face {
+  font-family: "Teko";
+  src: local("Teko"), url(./public/fonts/Teko-Regular.ttf) format("opentype");
+}
