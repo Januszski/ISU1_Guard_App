@@ -3,12 +3,20 @@
 
 fn main() {
   tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![greet])
+.plugin(tauri_plugin_sql::Builder::new().build())
+    // .invoke_handler(tauri::generate_handler![greet])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
 
-#[tauri::command]
-fn greet(name: &str) -> String {
-   format!("Test, {}!", name)
-}
+// #[tauri::command]
+// fn greet(name: &str) -> String {
+//    format!("Test, {}!", name)
+// }
+
+// fn main() {
+//   tauri::Builder::default()
+//     .run(tauri::generate_context!())
+//     .expect("error while running tauri application");
+// }
+

@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import ViewPrisoners from "./ViewPrisoners";
+import Database from "@tauri-apps/plugin-sql";
 
 const PrisonButton = ({ label, isActive, onClick }) => {
   return (
@@ -21,8 +22,8 @@ const PrisonButton = ({ label, isActive, onClick }) => {
   );
 };
 
-export default function Component({ cellNumber }) {
-  const [isLocked, setIsLocked] = useState(true);
+export default function Component({ cellId, cellNumber, isOpen }) {
+  const [isLocked, setIsLocked] = useState(!isOpen);
 
   const CellBars = ({ isLocked }) => (
     <div
@@ -68,13 +69,31 @@ export default function Component({ cellNumber }) {
           <PrisonButton
             label='Lock'
             isActive={isLocked}
-            onClick={() => setIsLocked(true)}
+            onClick={async () => {
+              const db = await Database.load(
+                "mysql://warden:password@localhost/iseage_test1"
+              );
+              await db.execute("UPDATE cells SET opened = ? WHERE id = ?", [
+                0,
+                cellId,
+              ]);
+              setIsLocked(true);
+            }}
           />
-          <ViewPrisoners cellNumber={cellNumber} />
+          <ViewPrisoners cellId={cellId} />
           <PrisonButton
             label='Unlock'
             isActive={!isLocked}
-            onClick={() => setIsLocked(false)}
+            onClick={async () => {
+              const db = await Database.load(
+                "mysql://warden:password@localhost/iseage_test1"
+              );
+              await db.execute("UPDATE cells SET opened = ? WHERE id = ?", [
+                1,
+                cellId,
+              ]);
+              setIsLocked(false);
+            }}
           />
         </div>
       </div>

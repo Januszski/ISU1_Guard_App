@@ -1,7 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
 
-import { invoke } from "@tauri-apps/api";
 import Header from "./components/Header";
 import React, { useEffect, useState } from "react";
 import { useAtom } from "jotai";
@@ -12,11 +11,9 @@ import PrisonerGrid from "components/OverseePrisoners/PrisonerGrid";
 import OverseePrisonser from "components/OverseePrisoners/OverseePrisonser";
 import CameraMonitoring from "components/ViewCameras/CameraMonitoring";
 import Inbox from "components/ViewMessages/Inbox";
+import { setupDatabase } from "./utils/dbSetup";
 
 function App() {
-  invoke("greet", { name: "whatever" }).then((response) =>
-    console.log(response)
-  );
   const [buttonSelected, setButtonSelected] = useAtom(headerButtonAtom);
 
   return (
