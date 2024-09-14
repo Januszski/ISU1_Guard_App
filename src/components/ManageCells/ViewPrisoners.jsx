@@ -17,6 +17,8 @@ import { ThemeProvider, createTheme } from "@mui/material";
 import Database from "@tauri-apps/plugin-sql";
 import { useAtom } from "jotai";
 import { headerButtonAtom, currentPrisonerIdAtom } from "../../atom";
+import { getCellNameFromCellIdDb } from "repo/cellsRepo";
+import { getPrisonersFromCellIdDb } from "repo/prisonerRepo";
 
 const prisonersTemp = ["Joey Diaz", "Nancy Crane"];
 
@@ -68,13 +70,6 @@ function SimpleDialog({ onClose, selectedValue, open, cellNumber, prisoners }) {
   );
 }
 
-// SimpleDialog.propTypes = {
-//   onClose: PropTypes.func.isRequired,
-//   open: PropTypes.bool.isRequired,
-//   selectedValue: PropTypes.string.isRequired,
-//   cellNumber: PropTypes.string.isRequired,
-// };
-
 export default function SimpleDialogDemo({ cellId }) {
   const [open, setOpen] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(prisonersTemp[1]);
@@ -82,21 +77,10 @@ export default function SimpleDialogDemo({ cellId }) {
   const [currentCell, setCurrentCell] = React.useState("");
 
   const handleClickOpen = async () => {
-    const db = await Database.load(
-      "mysql://warden:password@localhost/iseage_test1"
-    );
-    const result = await db.select(
-      "SELECT prisoners.* FROM prisoners JOIN prisoner_cells ON prisoners.id = prisoner_cells.prisoner_id WHERE prisoner_cells.cell_id = ?",
-      [cellId] // Passing cellId as a parameter
-    );
-    const cell = await db.select(
-      "SELECT cell_number FROM cells WHERE id = ?",
-      [cellId] // Pass cellId as parameter
-    );
-    console.log("FOUND CELL", cell);
-    console.log("PRISONERS IN CELL", result);
+    const prisoners = await getPrisonersFromCellIdDb(cellId);
+    const cell = await getCellNameFromCellIdDb(cellId);
     setCurrentCell(cell);
-    setPrisoners(result); // Set the fetched data in state
+    setPrisoners(prisoners);
     setOpen(true);
   };
 

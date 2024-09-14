@@ -5,6 +5,7 @@ import { blue, orange, grey } from "@mui/material/colors";
 import PersonIcon from "@mui/icons-material/Person";
 import PrisonerCard from "./PrisonerCard";
 import Database from "@tauri-apps/plugin-sql";
+import { getAllPrisonsersDb } from "repo/prisonerRepo";
 
 export default function Component() {
   const [prisoners, setPrisoners] = useState([]);
@@ -12,19 +13,17 @@ export default function Component() {
 
   const fetchPrisoners = async () => {
     try {
-      const db = await Database.load(
-        "mysql://warden:password@localhost/iseage_test1"
-      );
-      const result = await db.select("SELECT * from prisoners");
+      const result = await getAllPrisonsersDb();
 
-      console.log("RESULT ", result);
       setPrisoners(result);
     } catch (err) {
-      setError("Error fetching cells: " + err.message);
+      setError("Error fetching prisoners: " + err.message);
     }
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+
     fetchPrisoners();
 
     const intervalId = setInterval(fetchPrisoners, 10000);

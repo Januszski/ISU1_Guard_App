@@ -1,56 +1,52 @@
 // @ts-nocheck
-"use client";
 
 import { useEffect, useState } from "react";
 import { Calendar, Edit3, Save } from "lucide-react";
 import React from "react";
-import { blue, orange, grey } from "@mui/material/colors";
+import { orange, grey } from "@mui/material/colors";
 import PersonIcon from "@mui/icons-material/Person";
 import { Avatar, Button } from "@mui/material";
 import { useAtom } from "jotai";
 import { currentPrisonerIdAtom } from "../../atom";
-import Database from "@tauri-apps/plugin-sql";
+import {
+  getCellNameFromPrisonerIdDb,
+  getCellIdFromCellNameDb,
+  movePrisonerInCellDb,
+} from "repo/cellsRepo";
+import { getPrisonerDb } from "repo/prisonerRepo";
+import { Snackbar, Alert } from "@mui/material";
+import { updatePrisonerNotesDb } from "repo/prisonerRepo";
 
 export default function Component() {
-  const [prisoner, setPrisoner] = useState({
-    id: 1001,
-    name: "John Doe",
-    crime: "Cybercrime",
-    sentenceStart: "2022-01-15",
-    sentenceEnd: "2027-01-15",
-    currentCell: "Block A, Cell 101",
-    notes: "Exhibits good behavior. Participates in prison education program.",
-  });
+  const [prisoner, setPrisoner] = useState({});
 
   const [newCell, setNewCell] = useState("");
   const [editingNotes, setEditingNotes] = useState(false);
-  const [tempNotes, setTempNotes] = useState(prisoner.notes);
   const [prisonerIdSelected, setPrisonerIdSelected] = useAtom(
     currentPrisonerIdAtom
   );
   const [currentPrisonerInfo, setCurrentPrisonerInfo] = useState();
   const [currentCell, setCurrentCell] = useState("");
+  const [notification, setNotification] = useState({
+    message: "",
+    type: "success",
+  });
+  const [open, setOpen] = useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
 
   useEffect(() => {
     async function fetchPrisonerById() {
-      const db = await Database.load(
-        "mysql://warden:password@localhost/iseage_test1"
-      );
+      const result = await getPrisonerDb(prisonerIdSelected);
 
-      // Query to get all information about the prisoner with the given ID
-      const result = await db.select("SELECT * FROM prisoners WHERE id = ?", [
-        prisonerIdSelected,
-      ]);
-
-      const cell = await db.select(
-        "SELECT c.cell_number FROM cells c JOIN prisoner_cells pc ON c.id = pc.cell_id WHERE pc.prisoner_id = ?",
-        [prisonerIdSelected]
-      );
-
-      console.log("Cell for this prisoner ", currentCell);
+      const cell = await getCellNameFromPrisonerIdDb(prisonerIdSelected);
 
       setCurrentCell(cell);
-      console.log("PRISONER SELECTED ", result);
 
       setCurrentPrisonerInfo(result[0]);
 
@@ -60,41 +56,66 @@ export default function Component() {
     fetchPrisonerById();
   }, [prisonerIdSelected]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleCellAssignment = async () => {
-    const db = await Database.load(
-      "mysql://warden:password@localhost/iseage_test1"
-    );
+    try {
+      const cellIdFromCellNumber = await getCellIdFromCellNameDb(newCell);
 
-    const cellIdFromCellNumber = await db.select(
-      "SELECT id FROM cells WHERE cell_number = ?",
-      [newCell]
-    );
-    if (cellIdFromCellNumber.length === 0) {
-      throw new Error(`Cell with number ${newCell} not found`);
-    }
+      if (cellIdFromCellNumber.length === 0) {
+        setNotification({
+          message: `Cell with name ${newCell} not found`,
+          type: "error",
+        });
+        setOpen(true);
+        return;
+      }
 
-    const cellId = cellIdFromCellNumber[0].id;
-
-    const updateResult = await db.execute(
-      "UPDATE prisoner_cells SET cell_id = ? WHERE prisoner_id = ?",
-      [cellId, prisonerIdSelected]
-    );
-    if (updateResult.rowsAffected === 0) {
-      throw new Error(
-        `No rows affected. Maybe the prisoner_id ${prisonerIdSelected} does not exist?`
+      const cellId = cellIdFromCellNumber[0].id;
+      const updateResult = await movePrisonerInCellDb(
+        cellId,
+        prisonerIdSelected
       );
-    }
 
-    console.log("Prisoner cell updated successfully");
-    setCurrentCell([{ cell_number: newCell }]);
+      if (updateResult.rowsAffected === 0) {
+        setNotification({
+          message: `No rows affected. Maybe the prisoner_id ${prisonerIdSelected} does not exist?`,
+          type: "error",
+        });
+        setOpen(true);
+        return;
+      }
+
+      setNotification({
+        message: "Prisoner cell updated successfully",
+        type: "success",
+      });
+      setOpen(true);
+      setCurrentCell([{ cell_number: newCell }]);
+    } catch (error) {
+      setNotification({
+        message: `An error occurred: ${error.message}`,
+        type: "error",
+      });
+      setOpen(true);
+    }
   };
 
-  const handleNotesEdit = () => {
+  const handleNotesEdit = async () => {
+    if (editingNotes) {
+      console.log("SAVING NOTES");
+      await updatePrisonerNotesDb(
+        prisonerIdSelected,
+        currentPrisonerInfo.notes
+      );
+    }
     setEditingNotes(!editingNotes);
   };
 
   const handleNotesChange = (e) => {
-    setPrisoner({ ...prisoner, notes: e.target.value });
+    setCurrentPrisonerInfo({ ...currentPrisonerInfo, notes: e.target.value });
   };
 
   const handleBackButtonClick = () => {
@@ -109,6 +130,15 @@ export default function Component() {
 
   return (
     <>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity={notification.type}
+          sx={{ width: "100%" }}
+        >
+          {notification.message}
+        </Alert>
+      </Snackbar>
       <div className='min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8'>
         <div className='max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-xl overflow-hidden'>
           <div className='flex items-center'>
@@ -126,7 +156,7 @@ export default function Component() {
             </Button>
           </div>
           <div className='md:flex'>
-            <div className='md:flex-shrink-0'>
+            <div className='md:flex-shrink-0 ml-9 m-t-4'>
               {/* <div className='h-48 w-full md:w-48 bg-gray-700 flex items-center justify-center overflow-hidden'> */}
               <Avatar
                 sx={{
@@ -183,11 +213,12 @@ export default function Component() {
                 value={newCell}
                 onChange={(e) => setNewCell(e.target.value)}
                 placeholder='Enter new cell assignment'
-                className='flex-grow px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='flex-grow px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500'
               />
               <button
                 onClick={handleCellAssignment}
-                className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800'
+                // style={{ background: "#F37D3D" }}
+                className='px-4 py-2 text-white bg-[#F37D3D] rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800'
               >
                 Assign
               </button>
@@ -197,28 +228,40 @@ export default function Component() {
           <div className='border-t border-gray-700 p-8'>
             <div className='flex justify-between items-center mb-4'>
               <h2 className='text-2xl font-bold text-white'>Notes</h2>
-              <button
+              <Button
                 onClick={handleNotesEdit}
-                className='flex items-center px-3 py-1 bg-gray-700 text-white rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-150 ease-in-out'
+                variant='outlined'
+                sx={{
+                  color: "white",
+                  borderColor: "gray",
+                  "&:hover": {
+                    borderColor: "lightgray",
+                    backgroundColor: "#444",
+                  },
+                }}
+                startIcon={editingNotes ? <Save /> : <Edit3 />}
               >
-                {editingNotes ? (
-                  <Save className='h-4 w-4 mr-2' />
-                ) : (
-                  <Edit3 className='h-4 w-4 mr-2' />
-                )}
                 {editingNotes ? "Save" : "Edit"}
-              </button>
+              </Button>
             </div>
-            <div className='bg-gray-700 rounded-md p-3 min-h-[100px]'>
+
+            {/* Textbox for editing or displaying notes */}
+            <div className='bg-gray-700 rounded-md p-3 min-h-[150px]'>
               {editingNotes ? (
                 <textarea
-                  value={prisoner.notes}
+                  value={currentPrisonerInfo?.notes}
                   onChange={handleNotesChange}
-                  className='w-full h-full bg-transparent text-white focus:outline-none resize-none'
+                  placeholder='Enter notes here...'
+                  className='w-full h-full bg-gray-600 text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none block'
+                  rows={6}
+                  style={{ minHeight: "150px" }} // Ensures stable height
                 />
               ) : (
-                <p className='text-gray-300 whitespace-pre-wrap'>
-                  {prisoner.notes}
+                <p
+                  className='text-gray-300 whitespace-pre-wrap'
+                  style={{ minHeight: "150px" }}
+                >
+                  {currentPrisonerInfo?.notes || "No notes available."}
                 </p>
               )}
             </div>

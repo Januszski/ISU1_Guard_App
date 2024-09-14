@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import ViewPrisoners from "./ViewPrisoners";
 import Database from "@tauri-apps/plugin-sql";
+import { lockCellDb, unlockCellDb } from "repo/cellsRepo";
 
 const PrisonButton = ({ label, isActive, onClick }) => {
   return (
@@ -70,13 +71,7 @@ export default function Component({ cellId, cellNumber, isOpen }) {
             label='Lock'
             isActive={isLocked}
             onClick={async () => {
-              const db = await Database.load(
-                "mysql://warden:password@localhost/iseage_test1"
-              );
-              await db.execute("UPDATE cells SET opened = ? WHERE id = ?", [
-                0,
-                cellId,
-              ]);
+              lockCellDb(cellId);
               setIsLocked(true);
             }}
           />
@@ -85,13 +80,7 @@ export default function Component({ cellId, cellNumber, isOpen }) {
             label='Unlock'
             isActive={!isLocked}
             onClick={async () => {
-              const db = await Database.load(
-                "mysql://warden:password@localhost/iseage_test1"
-              );
-              await db.execute("UPDATE cells SET opened = ? WHERE id = ?", [
-                1,
-                cellId,
-              ]);
+              unlockCellDb(cellId);
               setIsLocked(false);
             }}
           />

@@ -12,6 +12,7 @@ import OverseePrisonser from "components/OverseePrisoners/OverseePrisonser";
 import CameraMonitoring from "components/ViewCameras/CameraMonitoring";
 import Inbox from "components/ViewMessages/Inbox";
 import { setupDatabase } from "./utils/dbSetup";
+// require("dotenv").config();
 
 function App() {
   const [buttonSelected, setButtonSelected] = useAtom(headerButtonAtom);

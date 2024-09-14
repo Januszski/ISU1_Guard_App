@@ -7,6 +7,7 @@ import { useAtom } from "jotai";
 import { currentPrisonerIdAtom } from "../../atom";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import Database from "@tauri-apps/plugin-sql";
+import { getCellNameFromPrisonerIdDb } from "repo/cellsRepo";
 
 const PrisonerCard = ({ prisoner, index }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -15,27 +16,6 @@ const PrisonerCard = ({ prisoner, index }) => {
   );
   const [currentCell, setCurrentCell] = useState();
   const [error, setError] = useState(null);
-
-  const fetchCell = async () => {
-    try {
-      const db = await Database.load(
-        "mysql://warden:password@localhost/iseage_test1"
-      );
-      const result = await db.select(
-        "SELECT c.cell_number FROM cells c JOIN prisoner_cells pc ON c.id = pc.cell_id WHERE pc.prisoner_id = ?",
-        [prisoner.id]
-      );
-
-      setCurrentCell(result);
-    } catch (err) {
-      setError("Error fetching cells: " + err.message);
-    }
-  };
-
-  useEffect(() => {
-    // Fetch cells when the component mounts
-    fetchCell();
-  }, []);
 
   const handleClick = () => {
     setPrisonerSelected(prisoner.id);
@@ -89,18 +69,7 @@ const PrisonerCard = ({ prisoner, index }) => {
         {/* <span style={{ fontFamily: "Teko", color: "orange", fontSize: 20 }}>
           Currently in cell #{prisoner.cell}
         </span> */}
-        <h3 className='text-base font-bold text-gray-100'>
-          Currently assigned cell{" "}
-          <span style={{ color: "#F37D3D" }}>
-            {" "}
-            {/* prettier-ignore */}
-            {/* @ts-ignore */}
-            {currentCell && currentCell?.length > 0
-              ? //@ts-ignore
-                currentCell[0]?.cell_number
-              : "..."}{" "}
-          </span>
-        </h3>
+        <h3 className='text-base font-bold text-gray-100'></h3>
 
         <PrisonButton label='Profile' onClick={handleClick} />
       </div>
