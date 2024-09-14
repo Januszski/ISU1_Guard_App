@@ -4,9 +4,35 @@ import { useState, useEffect } from "react";
 import { blue, orange, grey } from "@mui/material/colors";
 import PersonIcon from "@mui/icons-material/Person";
 import PrisonerCard from "./PrisonerCard";
+import Database from "@tauri-apps/plugin-sql";
 
 export default function Component() {
-  const prisoners = [
+  const [prisoners, setPrisoners] = useState([]);
+  const [error, setError] = useState(null);
+
+  const fetchPrisoners = async () => {
+    try {
+      const db = await Database.load(
+        "mysql://warden:password@localhost/iseage_test1"
+      );
+      const result = await db.select("SELECT * from prisoners");
+
+      console.log("RESULT ", result);
+      setPrisoners(result);
+    } catch (err) {
+      setError("Error fetching cells: " + err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchPrisoners();
+
+    const intervalId = setInterval(fetchPrisoners, 10000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const prisonersTemp = [
     {
       id: 1001,
       name: "John Doe",

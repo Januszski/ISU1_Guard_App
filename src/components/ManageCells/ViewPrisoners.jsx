@@ -15,15 +15,25 @@ import Typography from "@mui/material/Typography";
 import { blue, orange, grey } from "@mui/material/colors";
 import { ThemeProvider, createTheme } from "@mui/material";
 import Database from "@tauri-apps/plugin-sql";
+import { useAtom } from "jotai";
+import { headerButtonAtom, currentPrisonerIdAtom } from "../../atom";
 
 const prisonersTemp = ["Joey Diaz", "Nancy Crane"];
 
 function SimpleDialog({ onClose, selectedValue, open, cellNumber, prisoners }) {
+  const [buttonSelected, setButtonSelected] = useAtom(headerButtonAtom);
+  const [prisonerIdSelected, setPrisonerIdSelected] = useAtom(
+    currentPrisonerIdAtom
+  );
   const handleClose = () => {
     onClose(selectedValue);
   };
 
   const handleListItemClick = (value) => {
+    console.log("VALUE HERE ", value);
+    setButtonSelected("prisoners");
+    setPrisonerIdSelected(value);
+
     onClose(value);
   };
 
@@ -113,6 +123,7 @@ export default function SimpleDialogDemo({ cellId }) {
           selectedValue={selectedValue}
           open={open}
           onClose={handleClose}
+          //@ts-ignore
           cellNumber={currentCell[0]?.cell_number}
           prisoners={prisoners}
         />

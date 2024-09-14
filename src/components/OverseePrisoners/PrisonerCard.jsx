@@ -4,11 +4,38 @@ import { useState, useEffect } from "react";
 import { blue, orange, grey } from "@mui/material/colors";
 import PersonIcon from "@mui/icons-material/Person";
 import { useAtom } from "jotai";
-import { currentPrisonerAtom } from "../../atom";
+import { currentPrisonerIdAtom } from "../../atom";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import Database from "@tauri-apps/plugin-sql";
 
 const PrisonerCard = ({ prisoner, index }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [prisonerSelected, setPrisonerSelected] = useAtom(currentPrisonerAtom);
+  const [prisonerSelected, setPrisonerSelected] = useAtom(
+    currentPrisonerIdAtom
+  );
+  const [currentCell, setCurrentCell] = useState();
+  const [error, setError] = useState(null);
+
+  const fetchCell = async () => {
+    try {
+      const db = await Database.load(
+        "mysql://warden:password@localhost/iseage_test1"
+      );
+      const result = await db.select(
+        "SELECT c.cell_number FROM cells c JOIN prisoner_cells pc ON c.id = pc.cell_id WHERE pc.prisoner_id = ?",
+        [prisoner.id]
+      );
+
+      setCurrentCell(result);
+    } catch (err) {
+      setError("Error fetching cells: " + err.message);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch cells when the component mounts
+    fetchCell();
+  }, []);
 
   const handleClick = () => {
     setPrisonerSelected(prisoner.id);
@@ -44,14 +71,19 @@ const PrisonerCard = ({ prisoner, index }) => {
           </Avatar>
 
           <div>
-            <h3 className='text-lg font-bold text-gray-100'>{prisoner.name}</h3>
+            <h3 className='text-lg font-bold text-gray-100'>
+              {prisoner.firstname} {prisoner.lastname}
+            </h3>
             <span className='text-xs font-mono text-gray-400'>
               ID: {prisoner.id}
             </span>
           </div>
         </div>
         <p className='text-sm text-gray-400'>{prisoner.crime}</p>
-        <p className='text-xs text-gray-500'>{prisoner.sentence}</p>
+        <p className='text-xs text-gray-500'>
+          <CalendarTodayIcon style={{ marginRight: "8px" }} />
+          {prisoner.sentence_start} - {prisoner.sentence_end}
+        </p>
       </div>
       <div className='bg-gray-900 p-2 flex justify-between'>
         {/* <span style={{ fontFamily: "Teko", color: "orange", fontSize: 20 }}>
@@ -59,7 +91,15 @@ const PrisonerCard = ({ prisoner, index }) => {
         </span> */}
         <h3 className='text-base font-bold text-gray-100'>
           Currently assigned cell{" "}
-          <span style={{ color: "#F37D3D" }}> #{prisoner.cell}</span>
+          <span style={{ color: "#F37D3D" }}>
+            {" "}
+            {/* prettier-ignore */}
+            {/* @ts-ignore */}
+            {currentCell && currentCell?.length > 0
+              ? //@ts-ignore
+                currentCell[0]?.cell_number
+              : "..."}{" "}
+          </span>
         </h3>
 
         <PrisonButton label='Profile' onClick={handleClick} />

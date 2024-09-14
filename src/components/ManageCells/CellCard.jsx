@@ -58,7 +58,7 @@ export default function Component({ cellId, cellNumber, isOpen }) {
         <CellBars isLocked={isLocked} />
         <div className='relative z-10 h-full flex flex-col justify-between'>
           <div className='text-gray-300 text-lg font-bold'>
-            Cell #{cellNumber}
+            Cell {cellNumber}
           </div>
         </div>
       </div>

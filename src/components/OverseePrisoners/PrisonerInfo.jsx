@@ -1,13 +1,15 @@
+// @ts-nocheck
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Calendar, Edit3, Save } from "lucide-react";
 import React from "react";
 import { blue, orange, grey } from "@mui/material/colors";
 import PersonIcon from "@mui/icons-material/Person";
 import { Avatar, Button } from "@mui/material";
 import { useAtom } from "jotai";
-import { currentPrisonerAtom } from "../../atom";
+import { currentPrisonerIdAtom } from "../../atom";
+import Database from "@tauri-apps/plugin-sql";
 
 export default function Component() {
   const [prisoner, setPrisoner] = useState({
@@ -23,13 +25,68 @@ export default function Component() {
   const [newCell, setNewCell] = useState("");
   const [editingNotes, setEditingNotes] = useState(false);
   const [tempNotes, setTempNotes] = useState(prisoner.notes);
-  const [prisonerSelected, setPrisonerSelected] = useAtom(currentPrisonerAtom);
+  const [prisonerIdSelected, setPrisonerIdSelected] = useAtom(
+    currentPrisonerIdAtom
+  );
+  const [currentPrisonerInfo, setCurrentPrisonerInfo] = useState();
+  const [currentCell, setCurrentCell] = useState("");
 
-  const handleCellAssignment = () => {
-    if (newCell.trim()) {
-      setPrisoner({ ...prisoner, currentCell: newCell.trim() });
-      setNewCell("");
+  useEffect(() => {
+    async function fetchPrisonerById() {
+      const db = await Database.load(
+        "mysql://warden:password@localhost/iseage_test1"
+      );
+
+      // Query to get all information about the prisoner with the given ID
+      const result = await db.select("SELECT * FROM prisoners WHERE id = ?", [
+        prisonerIdSelected,
+      ]);
+
+      const cell = await db.select(
+        "SELECT c.cell_number FROM cells c JOIN prisoner_cells pc ON c.id = pc.cell_id WHERE pc.prisoner_id = ?",
+        [prisonerIdSelected]
+      );
+
+      console.log("Cell for this prisoner ", currentCell);
+
+      setCurrentCell(cell);
+      console.log("PRISONER SELECTED ", result);
+
+      setCurrentPrisonerInfo(result[0]);
+
+      return result;
     }
+
+    fetchPrisonerById();
+  }, [prisonerIdSelected]);
+
+  const handleCellAssignment = async () => {
+    const db = await Database.load(
+      "mysql://warden:password@localhost/iseage_test1"
+    );
+
+    const cellIdFromCellNumber = await db.select(
+      "SELECT id FROM cells WHERE cell_number = ?",
+      [newCell]
+    );
+    if (cellIdFromCellNumber.length === 0) {
+      throw new Error(`Cell with number ${newCell} not found`);
+    }
+
+    const cellId = cellIdFromCellNumber[0].id;
+
+    const updateResult = await db.execute(
+      "UPDATE prisoner_cells SET cell_id = ? WHERE prisoner_id = ?",
+      [cellId, prisonerIdSelected]
+    );
+    if (updateResult.rowsAffected === 0) {
+      throw new Error(
+        `No rows affected. Maybe the prisoner_id ${prisonerIdSelected} does not exist?`
+      );
+    }
+
+    console.log("Prisoner cell updated successfully");
+    setCurrentCell([{ cell_number: newCell }]);
   };
 
   const handleNotesEdit = () => {
@@ -42,9 +99,13 @@ export default function Component() {
 
   const handleBackButtonClick = () => {
     console.log("Back button clicked");
-    setPrisonerSelected("");
+    setPrisonerIdSelected("");
     // Add any other logic you want to execute when the button is clicked
   };
+
+  if (!prisoner) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <>
@@ -81,27 +142,33 @@ export default function Component() {
             </div>
             <div className='p-8 w-full'>
               <div className='uppercase tracking-wide text-sm text-gray-400 font-semibold'>
-                Prisoner ID: {prisoner.id}
+                Prisoner ID:{" "}
+                {
+                  // @ts-ignore
+                  currentPrisonerInfo?.id
+                }
               </div>
               <h1 className='mt-2 text-3xl leading-8 font-extrabold tracking-tight text-white'>
-                {prisoner.name}
+                {currentPrisonerInfo?.firstname} {currentPrisonerInfo?.lastname}
               </h1>
-              <p className='mt-2 text-xl text-gray-300'>{prisoner.crime}</p>
+              <p className='mt-2 text-xl text-gray-300'>
+                {currentPrisonerInfo?.crime}
+              </p>
 
               <div className='mt-4 flex flex-wrap justify-center gap-4'>
                 <div className='flex items-center text-gray-400'>
                   <Calendar className='h-5 w-5 mr-2' />
-                  <span>Start: {prisoner.sentenceStart}</span>
+                  <span>Start: {currentPrisonerInfo?.sentence_start}</span>
                 </div>
                 <div className='flex items-center text-gray-400'>
                   <Calendar className='h-5 w-5 mr-2' />
-                  <span>End: {prisoner.sentenceEnd}</span>
+                  <span>End: {currentPrisonerInfo?.sentence_end}</span>
                 </div>
               </div>
 
               <div className='mt-4'>
                 <h2 className='text-xl font-bold text-white'>Current Cell</h2>
-                <p className='text-gray-300'>{prisoner.currentCell}</p>
+                <p className='text-gray-300'>{currentCell[0]?.cell_number}</p>
               </div>
             </div>
           </div>
