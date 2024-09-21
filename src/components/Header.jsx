@@ -70,6 +70,11 @@ export default function PrimarySearchAppBar() {
   const handleMessagesClick = () => {
     setButtonSelected("inbox");
   };
+  const handleSignInClick = () => {
+    setAnchorEl(null);
+    handleMobileMenuClose();
+    setButtonSelected("signin");
+  };
 
   const theme = createTheme({
     palette: {
@@ -96,7 +101,7 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Sign in as Warden</MenuItem>
+      <MenuItem onClick={handleSignInClick}>Sign in as Warden</MenuItem>
     </Menu>
   );
 

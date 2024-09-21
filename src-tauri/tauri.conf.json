@@ -42,9 +42,10 @@
   },
   "productName": "Guard Station",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.tauri.dev1",
   "plugins": {},
   "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "fullscreen": false,

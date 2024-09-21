@@ -12,10 +12,22 @@ import OverseePrisonser from "components/OverseePrisoners/OverseePrisonser";
 import CameraMonitoring from "components/ViewCameras/CameraMonitoring";
 import Inbox from "components/ViewMessages/Inbox";
 import { setupDatabase } from "./utils/dbSetup";
+import { invoke } from "@tauri-apps/api/core";
+import WardenSignIn from "components/WardenSignIn";
+
 // require("dotenv").config();
 
 function App() {
   const [buttonSelected, setButtonSelected] = useAtom(headerButtonAtom);
+  // @ts-ignore
+  // const invoke = window.__TAURI__.core.invoke;
+
+  // const a = invoke("greet", { name: "balls" }).then((response) =>
+  //   console.log(response)
+  // );
+  // console.log("A ", a);
+
+  // invoke("my_custom_command");
 
   return (
     <div className='App'>
@@ -24,6 +36,7 @@ function App() {
       {buttonSelected === "prisoners" && <OverseePrisonser />}
       {buttonSelected === "cameras" && <CameraMonitoring />}
       {buttonSelected === "inbox" && <Inbox />}
+      {buttonSelected === "signin" && <WardenSignIn />}
     </div>
   );
 }
