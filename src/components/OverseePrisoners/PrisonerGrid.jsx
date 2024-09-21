@@ -31,49 +31,6 @@ export default function Component() {
     return () => clearInterval(intervalId);
   }, []);
 
-  const prisonersTemp = [
-    {
-      id: 1001,
-      name: "John Doe",
-      crime: "Cybercrime",
-      sentence: "5 years",
-      cell: 1,
-    },
-    {
-      id: 1002,
-      name: "Jane Smith",
-      crime: "Fraud",
-      sentence: "3 years",
-      cell: 2,
-    },
-    {
-      id: 1003,
-      name: "Bob Johnson",
-      crime: "Theft",
-      sentence: "2 years",
-      cell: 3,
-    },
-    {
-      id: 1004,
-      name: "Alice Brown",
-      crime: "Assault",
-      sentence: "4 years",
-      cell: 4,
-    },
-    {
-      id: 1005,
-      name: "Charlie Davis",
-      crime: "Drug Possession",
-      sentence: "1 year",
-    },
-    {
-      id: 1006,
-      name: "Eva Wilson",
-      crime: "Embezzlement",
-      sentence: "6 years",
-    },
-  ];
-
   return (
     <div className='min-h-screen bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden'>
       {/* Concrete texture background */}

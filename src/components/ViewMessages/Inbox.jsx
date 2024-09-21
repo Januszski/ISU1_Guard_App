@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail, Trash2, AlertCircle, X } from "lucide-react";
 import React from "react";
+import { deleteMessageByIdDb, getAllMessagesDb } from "repo/messagesRepo";
 
 const MessageRow = ({ message, onClick }) => (
   <div
-    className={`flex items-center space-x-4 p-4 border-b border-gray-700 hover:bg-gray-800 transition-colors duration-150 cursor-pointer ${
-      message.isUrgent ? "bg-red-900 bg-opacity-20" : ""
-    }`}
+    className={`flex items-center space-x-4 p-4 border-b border-gray-700 hover:bg-gray-800 transition-colors duration-150 cursor-pointer `}
     onClick={onClick}
   >
     <div className='flex-grow'>
@@ -16,19 +15,37 @@ const MessageRow = ({ message, onClick }) => (
         <span className='text-sm font-semibold text-gray-300'>
           {message.sender}
         </span>
-        <span className='text-xs text-gray-500'>{message.date}</span>
+        <span className='text-xs text-gray-500'>{message.created_at}</span>
       </div>
       <div className='text-sm font-medium text-gray-200'>{message.subject}</div>
-      <div className='text-sm text-gray-400 truncate'>{message.content}</div>
+      <div className='text-sm text-gray-400 truncate'>{message.message}</div>
     </div>
-    {message.isUrgent && (
-      <AlertCircle className='h-5 w-5 text-red-500 flex-shrink-0' />
-    )}
   </div>
 );
 
 export default function Component() {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState([]);
+  const [error, setError] = useState(null);
+
+  const fetchMessages = async () => {
+    try {
+      const result = await getAllMessagesDb();
+      console.log("MESSAGES ", result);
+      setMessages(result);
+    } catch (err) {
+      //setError("Error fetching cells: " + err.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+
+    const intervalId = setInterval(fetchMessages, 10000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const [messages1, setMessages2] = useState([
     {
       id: 1,
       sender: "Warden Smith",
@@ -69,9 +86,10 @@ export default function Component() {
 
   const [selectedMessage, setSelectedMessage] = useState(null);
 
-  const handleDelete = (id) => {
-    setMessages(messages.filter((msg) => msg.id !== id));
-    if (selectedMessage?.id === id) {
+  const handleDelete = async (id) => {
+    setMessages(messages.filter((msg) => msg.messageId !== id));
+    await deleteMessageByIdDb(id);
+    if (selectedMessage?.messageId === id) {
       setSelectedMessage(null);
     }
   };
@@ -88,7 +106,7 @@ export default function Component() {
           <div className='w-1/2 overflow-y-auto border-r border-gray-700'>
             {messages.map((message) => (
               <MessageRow
-                key={message.id}
+                key={message.messageId}
                 message={message}
                 onClick={() => setSelectedMessage(message)}
               />
@@ -109,21 +127,21 @@ export default function Component() {
                       {selectedMessage.subject}
                     </h2>
                     <p className='text-sm text-gray-400'>
-                      From: {selectedMessage.sender}
+                      From: {selectedMessage.sender_name}
                     </p>
                     <p className='text-sm text-gray-400'>
-                      {selectedMessage.date}
+                      {selectedMessage.created_at}
                     </p>
                   </div>
                   <button
-                    onClick={() => handleDelete(selectedMessage.id)}
+                    onClick={() => handleDelete(selectedMessage.messageId)}
                     className='p-1 hover:bg-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-500'
                   >
                     <Trash2 className='h-5 w-5 text-gray-500 hover:text-red-500' />
                   </button>
                 </div>
                 <div className='text-gray-300 whitespace-pre-wrap'>
-                  {selectedMessage.content}
+                  {selectedMessage.message}
                 </div>
               </div>
             ) : (

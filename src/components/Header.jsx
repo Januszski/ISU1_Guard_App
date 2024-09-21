@@ -21,6 +21,7 @@ import { ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import HeaderButton from "./HeaderButton";
 import { useAtom } from "jotai";
 import { headerButtonAtom } from "../atom";
+import { getAllMessagesDb } from "repo/messagesRepo";
 
 export default function PrimarySearchAppBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -29,6 +30,25 @@ export default function PrimarySearchAppBar() {
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  const [messages, setMessages] = React.useState([]);
+  const [error, setError] = React.useState(null);
+
+  const fetchMessages = async () => {
+    try {
+      const result = await getAllMessagesDb();
+      console.log("MESSAGES ", result);
+      setMessages(result);
+    } catch (err) {}
+  };
+
+  React.useEffect(() => {
+    fetchMessages();
+
+    const intervalId = setInterval(fetchMessages, 10000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -76,8 +96,7 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Sign in as Warden</MenuItem>
     </Menu>
   );
 
@@ -99,9 +118,9 @@ export default function PrimarySearchAppBar() {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size='large' color='inherit'>
+        <IconButton size='large' color='inherit' onClick={handleMessagesClick}>
           <Badge
-            badgeContent={4}
+            badgeContent={messages.length} //////////////////////////////////////////
             sx={{
               "& .MuiBadge-badge": {
                 backgroundColor: "purple",
@@ -114,22 +133,7 @@ export default function PrimarySearchAppBar() {
         </IconButton>
         <p>Messages</p>
       </MenuItem>
-      <MenuItem>
-        <IconButton size='large' color='inherit'>
-          <Badge
-            badgeContent={11}
-            sx={{
-              "& .MuiBadge-badge": {
-                backgroundColor: "purple",
-                color: "white",
-              },
-            }}
-          >
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
+
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size='large'
@@ -178,7 +182,7 @@ export default function PrimarySearchAppBar() {
                 onClick={handleMessagesClick}
               >
                 <Badge
-                  badgeContent={4}
+                  badgeContent={messages.length} ////////////////////////////////
                   sx={{
                     "& .MuiBadge-badge": {
                       backgroundColor: "purple",

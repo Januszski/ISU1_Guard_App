@@ -5,8 +5,6 @@ export const getAllPrisonsersDb = async () => {
 
   const result = await db.select("SELECT * from prisoners");
 
-  // db.close();
-
   return result;
 };
 
@@ -16,7 +14,6 @@ export const getPrisonerDb = async (prisonerId) => {
   const result = await db.select("SELECT * FROM prisoners WHERE id = ?", [
     prisonerId,
   ]);
-  // db.close();
 
   return result;
 };
@@ -28,8 +25,6 @@ export const getPrisonersFromCellIdDb = async (cellId) => {
     "SELECT prisoners.* FROM prisoners JOIN prisoner_cells ON prisoners.id = prisoner_cells.prisoner_id WHERE prisoner_cells.cell_id = ?",
     [cellId]
   );
-
-  // db.close();
 
   return result;
 };

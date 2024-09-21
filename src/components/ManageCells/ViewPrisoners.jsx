@@ -20,8 +20,6 @@ import { headerButtonAtom, currentPrisonerIdAtom } from "../../atom";
 import { getCellNameFromCellIdDb } from "repo/cellsRepo";
 import { getPrisonersFromCellIdDb } from "repo/prisonerRepo";
 
-const prisonersTemp = ["Joey Diaz", "Nancy Crane"];
-
 function SimpleDialog({ onClose, selectedValue, open, cellNumber, prisoners }) {
   const [buttonSelected, setButtonSelected] = useAtom(headerButtonAtom);
   const [prisonerIdSelected, setPrisonerIdSelected] = useAtom(
@@ -72,7 +70,7 @@ function SimpleDialog({ onClose, selectedValue, open, cellNumber, prisoners }) {
 
 export default function SimpleDialogDemo({ cellId }) {
   const [open, setOpen] = React.useState(false);
-  const [selectedValue, setSelectedValue] = React.useState(prisonersTemp[1]);
+  const [selectedValue, setSelectedValue] = React.useState();
   const [prisoners, setPrisoners] = React.useState([]);
   const [currentCell, setCurrentCell] = React.useState("");
 

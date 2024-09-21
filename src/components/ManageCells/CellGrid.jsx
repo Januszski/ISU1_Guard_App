@@ -65,11 +65,13 @@ export default function BasicGrid() {
               margin: "20px",
             }}
           >
-            <CellCard
-              cellId={cell.id}
-              cellNumber={cell.cell_number}
-              isOpen={cell.opened}
-            />
+            {(
+              <CellCard
+                cellId={cell?.id}
+                cellNumber={cell?.cell_number}
+                isOpen={cell?.opened}
+              />
+            ) || error}
           </Box>
         ))}
       </Box>
