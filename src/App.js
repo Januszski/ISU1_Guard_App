@@ -14,6 +14,7 @@ import Inbox from "components/ViewMessages/Inbox";
 import { setupDatabase } from "./utils/dbSetup";
 import { invoke } from "@tauri-apps/api/core";
 import WardenSignIn from "components/WardenSignIn";
+import SignedOut from "components/SignedOut";
 
 // require("dotenv").config();
 
@@ -37,6 +38,7 @@ function App() {
       {buttonSelected === "cameras" && <CameraMonitoring />}
       {buttonSelected === "inbox" && <Inbox />}
       {buttonSelected === "signin" && <WardenSignIn />}
+      {buttonSelected === "signedout" && <SignedOut />}
     </div>
   );
 }

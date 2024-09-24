@@ -2115,6 +2115,13 @@
   dependencies:
     "@tauri-apps/api" "^2.0.0-rc.4"
 
+"@tauri-apps/plugin-store@^2.0.0-rc":
+  version "2.0.0-rc.1"
+  resolved "https://registry.npmjs.org/@tauri-apps/plugin-store/-/plugin-store-2.0.0-rc.1.tgz"
+  integrity sha512-rW71Tkr7OifxoL8NkWgPy5Os4Gn3oJTbv/j/nJ03HDuYsq+F4+8kU8o4epRFJnr6VKmgB/2CtiacSC3dnSSRnA==
+  dependencies:
+    "@tauri-apps/api" "^2.0.0-rc.4"
+
 "@testing-library/dom@^8.5.0":
   version "8.20.1"
   resolved "https://registry.npmjs.org/@testing-library/dom/-/dom-8.20.1.tgz"

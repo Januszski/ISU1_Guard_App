@@ -5,10 +5,10 @@ import React from "react";
 const CameraFeed = ({ id }) => {
   const [isOffline, setIsOffline] = useState(false);
 
-  useEffect(() => {
-    const randomOffline = Math.random() < 0.2; // 20% chance of being offline
-    setIsOffline(randomOffline);
-  }, []);
+  // useEffect(() => {
+  //   const randomOffline = Math.random() < 0.2; // 20% chance of being offline
+  //   setIsOffline(randomOffline);
+  // }, []);
 
   return (
     <div className='relative bg-gray-900 border-4 border-gray-700 rounded-lg overflow-hidden shadow-lg'>
@@ -24,11 +24,27 @@ const CameraFeed = ({ id }) => {
         </div>
       ) : (
         <div className='w-full h-full relative'>
-          <img
-            src={`/placeholder.svg?height=200&width=200&text=CAM ${id}`}
-            alt={`Camera feed ${id}`}
+          {/* Replace img with video */}
+          <video
             className='w-full h-full object-cover'
-          />
+            controls={false}
+            autoPlay
+            loop
+            muted
+            controlsList='nodownload nofullscreen'
+            onError={() => {
+              setIsOffline(true);
+            }}
+            onLoadedData={() => {
+              setIsOffline(false);
+            }}
+          >
+            <source
+              src={`${process.env.REACT_APP_CAMERA_FEED_URI}/ISU1CAM${id}.mp4`}
+              type='video/mp4'
+            />
+            Your browser does not support the video tag.
+          </video>
           <div className='absolute inset-0 bg-static opacity-40 mix-blend-overlay'></div>
         </div>
       )}
@@ -66,7 +82,7 @@ export default function Component() {
           </div>
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {[...Array(9)].map((_, index) => (
+          {[...Array(6)].map((_, index) => (
             <CameraFeed key={index} id={index + 1} />
           ))}
         </div>

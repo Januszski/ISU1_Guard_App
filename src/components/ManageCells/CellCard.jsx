@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import ViewPrisoners from "./ViewPrisoners";
 import Database from "@tauri-apps/plugin-sql";
@@ -23,8 +23,14 @@ const PrisonButton = ({ label, isActive, onClick }) => {
   );
 };
 
-export default function Component({ cellId, cellNumber, isOpen }) {
+export default function Component({ cellId, cellNumber, isOpen, rerender }) {
   const [isLocked, setIsLocked] = useState(!isOpen);
+
+  useEffect(() => {
+    if (rerender) {
+      setIsLocked(false);
+    }
+  }, [rerender]);
 
   const CellBars = ({ isLocked }) => (
     <div

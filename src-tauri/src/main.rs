@@ -17,18 +17,21 @@ fn authenticate_ad(username: String, password: String) -> Result<String, String>
     //     LdapConn::new(ldap_url).map_err(|e| format!("Failed to connect to LDAP: {}", e))?;
 
     let mut ldap = match LdapConn::new(ldap_url) {
-      Ok(conn) => {
-        log::info!("Successfully connected to LDAP server.");
-          conn
-      }
-      Err(e) => {
-        log::info!("Failed to connect to LDAP: {}", e);
-          return Err(format!("Failed to connect to LDAP: {}", e));
-      }
-  };
-        
+        Ok(conn) => {
+            log::info!("Successfully connected to LDAP server.");
+            conn
+        }
+        Err(e) => {
+            log::info!("Failed to connect to LDAP: {}", e);
+            return Err(format!("Failed to connect to LDAP: {}", e));
+        }
+    };
 
-  log::info!("Attempting to bind with username: {} and password: {}", username, password);
+    log::info!(
+        "Attempting to bind with username: {} and password: {}",
+        username,
+        password
+    );
 
     // Attempt to bind the user with the given credentials
     ldap.simple_bind(&user_dn, &password)
@@ -41,8 +44,12 @@ fn authenticate_ad(username: String, password: String) -> Result<String, String>
 
 fn main() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_log::Builder::new().level(log::LevelFilter::Info)
-        .build())
+        .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .level(log::LevelFilter::Info)
+                .build(),
+        )
         .plugin(tauri_plugin_sql::Builder::new().build())
         .invoke_handler(tauri::generate_handler![authenticate_ad]) // Register the command
         .run(tauri::generate_context!())
