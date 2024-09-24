@@ -105,7 +105,6 @@ export default function Component() {
 
   const handleNotesEdit = async () => {
     if (editingNotes) {
-      console.log("SAVING NOTES");
       await updatePrisonerNotesDb(
         prisonerIdSelected,
         currentPrisonerInfo.notes
@@ -119,9 +118,7 @@ export default function Component() {
   };
 
   const handleBackButtonClick = () => {
-    console.log("Back button clicked");
     setPrisonerIdSelected("");
-    // Add any other logic you want to execute when the button is clicked
   };
 
   if (!prisoner) {
@@ -146,9 +143,9 @@ export default function Component() {
               variant='text'
               sx={{
                 "&:hover": {
-                  color: "darkred", // Optional: darken the color on hover
+                  color: "darkred",
                 },
-                color: "red", // Text color
+                color: "red",
               }}
               onClick={handleBackButtonClick}
             >
@@ -157,7 +154,6 @@ export default function Component() {
           </div>
           <div className='md:flex'>
             <div className='md:flex-shrink-0 ml-9 m-t-4'>
-              {/* <div className='h-48 w-full md:w-48 bg-gray-700 flex items-center justify-center overflow-hidden'> */}
               <Avatar
                 sx={{
                   bgcolor: grey[900],
@@ -168,7 +164,6 @@ export default function Component() {
               >
                 <PersonIcon sx={{ width: 200, height: 200 }} />
               </Avatar>
-              {/* </div> */}
             </div>
             <div className='p-8 w-full'>
               <div className='uppercase tracking-wide text-sm text-gray-400 font-semibold'>
@@ -217,7 +212,6 @@ export default function Component() {
               />
               <button
                 onClick={handleCellAssignment}
-                // style={{ background: "#F37D3D" }}
                 className='px-4 py-2 text-white bg-[#F37D3D] rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-800'
               >
                 Assign
@@ -245,7 +239,6 @@ export default function Component() {
               </Button>
             </div>
 
-            {/* Textbox for editing or displaying notes */}
             <div className='bg-gray-700 rounded-md p-3 min-h-[150px]'>
               {editingNotes ? (
                 <textarea
@@ -254,7 +247,7 @@ export default function Component() {
                   placeholder='Enter notes here...'
                   className='w-full h-full bg-gray-600 text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none block'
                   rows={6}
-                  style={{ minHeight: "150px" }} // Ensures stable height
+                  style={{ minHeight: "150px" }}
                 />
               ) : (
                 <p

@@ -5,11 +5,6 @@ import React from "react";
 const CameraFeed = ({ id }) => {
   const [isOffline, setIsOffline] = useState(false);
 
-  // useEffect(() => {
-  //   const randomOffline = Math.random() < 0.2; // 20% chance of being offline
-  //   setIsOffline(randomOffline);
-  // }, []);
-
   return (
     <div className='relative bg-gray-900 border-4 border-gray-700 rounded-lg overflow-hidden shadow-lg'>
       <div className='absolute top-2 left-2 bg-gray-800 bg-opacity-75 px-2 py-1 rounded-md z-10'>
@@ -24,7 +19,6 @@ const CameraFeed = ({ id }) => {
         </div>
       ) : (
         <div className='w-full h-full relative'>
-          {/* Replace img with video */}
           <video
             className='w-full h-full object-cover'
             controls={false}

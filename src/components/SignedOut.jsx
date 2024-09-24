@@ -1,11 +1,6 @@
 import React from "react";
 
 export default function SignOutPage() {
-  const handleSignInClick = () => {
-    // In a real application, this would navigate to the sign-in page
-    console.log("Navigating to sign-in page");
-  };
-
   return (
     <div className='min-h-screen flex items-center justify-center bg-gray-900 text-gray-300 relative overflow-hidden'>
       {/* Prison cell door background with vertical bars */}

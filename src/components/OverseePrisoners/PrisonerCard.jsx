@@ -1,21 +1,17 @@
 import { Avatar } from "@mui/material";
 import React from "react";
 import { useState, useEffect } from "react";
-import { blue, orange, grey } from "@mui/material/colors";
+import { orange, grey } from "@mui/material/colors";
 import PersonIcon from "@mui/icons-material/Person";
 import { useAtom } from "jotai";
 import { currentPrisonerIdAtom } from "../../atom";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import Database from "@tauri-apps/plugin-sql";
-import { getCellNameFromPrisonerIdDb } from "repo/cellsRepo";
 
 const PrisonerCard = ({ prisoner, index }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [prisonerSelected, setPrisonerSelected] = useAtom(
     currentPrisonerIdAtom
   );
-  const [currentCell, setCurrentCell] = useState();
-  const [error, setError] = useState(null);
 
   const handleClick = () => {
     setPrisonerSelected(prisoner.id);
@@ -28,9 +24,6 @@ const PrisonerCard = ({ prisoner, index }) => {
 
     return () => clearTimeout(timer);
   }, [index]);
-  useEffect(() => {
-    console.log(prisonerSelected);
-  }, [prisonerSelected]);
 
   return (
     <div
@@ -52,10 +45,10 @@ const PrisonerCard = ({ prisoner, index }) => {
 
           <div>
             <h3 className='text-lg font-bold text-gray-100'>
-              {prisoner.firstname} {prisoner.lastname}
+              {prisoner?.firstname} {prisoner?.lastname}
             </h3>
             <span className='text-xs font-mono text-gray-400'>
-              ID: {prisoner.id}
+              ID: {prisoner?.id}
             </span>
           </div>
         </div>
@@ -66,9 +59,6 @@ const PrisonerCard = ({ prisoner, index }) => {
         </p>
       </div>
       <div className='bg-gray-900 p-2 flex justify-between'>
-        {/* <span style={{ fontFamily: "Teko", color: "orange", fontSize: 20 }}>
-          Currently in cell #{prisoner.cell}
-        </span> */}
         <h3 className='text-base font-bold text-gray-100'></h3>
 
         <PrisonButton label='Profile' onClick={handleClick} />

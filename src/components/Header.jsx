@@ -1,23 +1,19 @@
 import * as React from "react";
-import { styled, alpha, createTheme } from "@mui/material/styles";
+import { useState, useEffect } from "react";
+import { createTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import InputBase from "@mui/material/InputBase";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { ThemeProvider } from "@emotion/react";
-import { Alert, Button, Snackbar } from "@mui/material";
-import { ToggleButton, ToggleButtonGroup } from "react-bootstrap";
+import { Alert, Snackbar } from "@mui/material";
 import HeaderButton from "./HeaderButton";
 import { useAtom } from "jotai";
 import { headerButtonAtom, signedInAtom } from "../atom";
@@ -27,22 +23,16 @@ import { Store } from "@tauri-apps/plugin-store";
 const store = new Store("store.bin");
 
 export default function PrimarySearchAppBar() {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const [buttonSelected, setButtonSelected] = useAtom(headerButtonAtom);
   const [signedIn, setSignedIn] = useAtom(signedInAtom);
-
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const [messages, setMessages] = React.useState([]);
-  const [error, setError] = React.useState(null);
-
-  const [notification, setNotification] = React.useState({
+  const [messages, setMessages] = useState([]);
+  const [notification, setNotification] = useState({
     message: "",
     type: "success",
   });
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -59,7 +49,10 @@ export default function PrimarySearchAppBar() {
     } catch (err) {}
   };
 
-  React.useEffect(() => {
+  const isMenuOpen = Boolean(anchorEl);
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  useEffect(() => {
     fetchMessages();
 
     const intervalId = setInterval(fetchMessages, 10000);
@@ -67,16 +60,14 @@ export default function PrimarySearchAppBar() {
     return () => clearInterval(intervalId);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const getSession = async () => {
       const val = await store.get("session");
       if (val) {
         setSignedIn(true);
-        console.log("User is signed in:", val);
       } else {
-        console.log("User is not signed in.");
+        setSignedIn(false);
       }
-      console.log("SIGNED IN, ", signedIn);
     };
     getSession();
   }, [buttonSelected]);
@@ -100,7 +91,6 @@ export default function PrimarySearchAppBar() {
 
   const handleMessagesClick = async () => {
     const val = await store.get("session");
-    console.log("SESSION HERE IN HEADER ", val);
 
     if (val) {
       setButtonSelected("inbox");
@@ -118,13 +108,7 @@ export default function PrimarySearchAppBar() {
     if (signedIn) {
       await store.clear();
       setSignedIn(false);
-      // setNotification({
-      //   message: `Signed out from Warden`,
-      //   type: "success",
-      // });
-      // setOpen(true);
       setButtonSelected("signedout");
-      console.log(store.get("session"));
     } else {
       setButtonSelected("signin");
     }
@@ -181,7 +165,7 @@ export default function PrimarySearchAppBar() {
       <MenuItem onClick={handleMessagesClick}>
         <IconButton size='large' color='inherit'>
           <Badge
-            badgeContent={messages.length} //////////////////////////////////////////
+            badgeContent={messages?.length}
             sx={{
               "& .MuiBadge-badge": {
                 backgroundColor: "purple",
@@ -254,7 +238,7 @@ export default function PrimarySearchAppBar() {
                   onClick={handleMessagesClick}
                 >
                   <Badge
-                    badgeContent={messages.length} ////////////////////////////////
+                    badgeContent={messages?.length}
                     sx={{
                       "& .MuiBadge-badge": {
                         backgroundColor: "purple",

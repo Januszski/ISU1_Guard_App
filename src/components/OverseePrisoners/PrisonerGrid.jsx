@@ -1,10 +1,6 @@
-import { Avatar } from "@mui/material";
 import React from "react";
 import { useState, useEffect } from "react";
-import { blue, orange, grey } from "@mui/material/colors";
-import PersonIcon from "@mui/icons-material/Person";
 import PrisonerCard from "./PrisonerCard";
-import Database from "@tauri-apps/plugin-sql";
 import { getAllPrisonsersDb } from "repo/prisonerRepo";
 
 export default function Component() {

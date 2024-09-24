@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import ViewPrisoners from "./ViewPrisoners";
-import Database from "@tauri-apps/plugin-sql";
 import { lockCellDb, unlockCellDb } from "repo/cellsRepo";
 
 const PrisonButton = ({ label, isActive, onClick }) => {
@@ -23,14 +22,14 @@ const PrisonButton = ({ label, isActive, onClick }) => {
   );
 };
 
-export default function Component({ cellId, cellNumber, isOpen, rerender }) {
+export default function Component({ cellId, cellNumber, isOpen, prisonBreak }) {
   const [isLocked, setIsLocked] = useState(!isOpen);
 
   useEffect(() => {
-    if (rerender) {
+    if (prisonBreak) {
       setIsLocked(false);
     }
-  }, [rerender]);
+  }, [prisonBreak]);
 
   const CellBars = ({ isLocked }) => (
     <div
@@ -57,8 +56,6 @@ export default function Component({ cellId, cellNumber, isOpen, rerender }) {
   );
 
   return (
-    // <div className='flex items-center justify-center min-h-screen bg-gray-900 p-4'>
-    // <div className='w-full max-w-md'>
     <div className='bg-gradient-to-b from-gray-700 to-gray-800 rounded-lg shadow-lg overflow-hidden min-w-min'>
       {/* Cell interior */}
       <div className='relative h-52 bg-gradient-to-b from-gray-600 to-gray-700 p-4'>
@@ -93,7 +90,5 @@ export default function Component({ cellId, cellNumber, isOpen, rerender }) {
         </div>
       </div>
     </div>
-    // </div>
-    // </div>
   );
 }

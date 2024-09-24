@@ -43,7 +43,6 @@ export default function Component({ buttonLabel }) {
         {buttonLabel === "cameras" && "View Cameras"}
       </span>
       <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-md'></div>
-      {/* <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjMzMzIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDVMNSAwWk02IDRMNCA2Wk0tMSAxTDEgLTFaIiBzdHJva2U9IiMyMjIiIHN0cm9rZS13aWR0aD0iMSI+PC9wYXRoPgo8L3N2Zz4=')] opacity-20 rounded-md"></div> */}
     </button>
   );
 }

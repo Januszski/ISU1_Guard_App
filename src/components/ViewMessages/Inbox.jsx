@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Mail, Trash2, AlertCircle, X } from "lucide-react";
+import { Mail, Trash2 } from "lucide-react";
 import React from "react";
 import { deleteMessageByIdDb, getAllMessagesDb } from "repo/messagesRepo";
 
@@ -15,10 +15,12 @@ const MessageRow = ({ message, onClick }) => (
         <span className='text-sm font-semibold text-gray-300'>
           {message.sender}
         </span>
-        <span className='text-xs text-gray-500'>{message.created_at}</span>
+        <span className='text-xs text-gray-500'>{message?.created_at}</span>
       </div>
-      <div className='text-sm font-medium text-gray-200'>{message.subject}</div>
-      <div className='text-sm text-gray-400 truncate'>{message.message}</div>
+      <div className='text-sm font-medium text-gray-200'>
+        {message?.subject}
+      </div>
+      <div className='text-sm text-gray-400 truncate'>{message?.message}</div>
     </div>
   </div>
 );
@@ -30,59 +32,19 @@ export default function Component() {
   const fetchMessages = async () => {
     try {
       const result = await getAllMessagesDb();
-      console.log("MESSAGES ", result);
       setMessages(result);
     } catch (err) {
-      //setError("Error fetching cells: " + err.message);
+      setError("Error fetching cells: " + err.message);
     }
   };
 
   useEffect(() => {
     fetchMessages();
 
-    const intervalId = setInterval(fetchMessages, 10000);
+    const intervalId = setInterval(fetchMessages, 30000);
 
     return () => clearInterval(intervalId);
   }, []);
-
-  const [messages1, setMessages2] = useState([
-    {
-      id: 1,
-      sender: "Warden Smith",
-      subject: "New Security Protocols",
-      content:
-        "Please review the updated security protocols for Cell Block D. These changes are effective immediately and all staff must be briefed before their next shift. Failure to comply will result in disciplinary action.",
-      date: "10:30 AM",
-      isUrgent: true,
-    },
-    {
-      id: 2,
-      sender: "Officer Johnson",
-      subject: "Shift Change Request",
-      content:
-        "I would like to request a shift change for next week. I have a family emergency and need to switch to the day shift if possible. I've already spoken with Officer Davis who is willing to swap. Please let me know if this is approved.",
-      date: "Yesterday",
-      isUrgent: false,
-    },
-    {
-      id: 3,
-      sender: "Maintenance Dept.",
-      subject: "Cell Block A Repairs",
-      content:
-        "The following repairs are scheduled for Cell Block A: \n1. Plumbing fixes in cells 101-105\n2. Electrical maintenance in the common area\n3. Reinforcement of cell doors 110 and 111\nPlease ensure all inmates are cleared from these areas during the specified times.",
-      date: "2 days ago",
-      isUrgent: false,
-    },
-    {
-      id: 4,
-      sender: "Medical Staff",
-      subject: "Inmate Health Report",
-      content:
-        "Attached is the weekly health report for all inmates. Notable points:\n- Inmate #4352 requires immediate dental treatment\n- Inmate #1187 has been cleared to return to general population\n- New medication schedule for Inmate #2290\nPlease review and take necessary actions.",
-      date: "3 days ago",
-      isUrgent: true,
-    },
-  ]);
 
   const [selectedMessage, setSelectedMessage] = useState(null);
 

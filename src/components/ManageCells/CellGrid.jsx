@@ -29,15 +29,13 @@ const store = new Store("store.bin");
 export default function BasicGrid() {
   const [cells, setCells] = useState([]);
   const [error, setError] = useState(null);
-  const [signedIn, setSignedIn] = useAtom(signedInAtom); // State for signed-in
-  const [isDialogOpen, setIsDialogOpen] = useState(false); // State for dialog visibility
-  const [forceRender, setForceRender] = useState(false); // Add a flag for forced re-render
+  const [signedIn, setSignedIn] = useAtom(signedInAtom);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const fetchCells = async () => {
     try {
       const result = await getAllCellsDb();
       setCells(result);
-      console.log("CELLS", result);
       const signedIn = await store.get("session");
       if (signedIn) {
         setSignedIn(true);
@@ -52,38 +50,32 @@ export default function BasicGrid() {
   useEffect(() => {
     fetchCells();
 
-    const intervalId = setInterval(fetchCells, 10000);
+    const intervalId = setInterval(fetchCells, 20000);
 
     return () => clearInterval(intervalId);
   }, []);
 
-  const handleUnlockAllCells = async () => {
+  const handleUnlockAllCellsAndShowFlag = async () => {
     try {
       const updatedCells = await Promise.all(
         cells.map(async (cell) => {
-          await unlockCellDb(cell.id); // Unlock cell in the database
-          return { ...cell, opened: true }; // Update the local cell state
+          await unlockCellDb(cell.id);
+          return { ...cell, opened: true };
         })
       );
 
-      // Update the cells state with the modified array
       setCells([...updatedCells]);
-      setIsDialogOpen(true); // Show the dialog after all cells are unlocked
     } catch (err) {
       console.error("Error unlocking cells: ", err);
+    } finally {
+      setIsDialogOpen(true);
     }
   };
 
-  // Handler for opening the dialog
   const handleOpenDialog = async () => {
-    //setIsDialogOpen(true);
-    await handleUnlockAllCells();
-    // const result = await getAllCellsDb();
-    // setCells(result);
-    // setForceRender((prev) => !prev); // Toggle the flag to force a re-render
+    await handleUnlockAllCellsAndShowFlag();
   };
 
-  // Handler for closing the dialog
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
   };
@@ -95,11 +87,11 @@ export default function BasicGrid() {
         justifyContent: "center",
         padding: 2,
         flexDirection: "column",
-        alignItems: "center", // Center content vertically
+        alignItems: "center",
       }}
     >
-      {signedIn && ( // Conditionally render the red button when signedIn is true
-        <Button
+      {signedIn && (
+        <Button //you MUST have this button and it MUST show flag when clicked
           variant='contained'
           sx={{
             backgroundColor: "red",
@@ -111,9 +103,9 @@ export default function BasicGrid() {
               backgroundColor: "darkred",
             },
           }}
-          onClick={handleOpenDialog} // Open dialog when button is clicked
+          onClick={handleOpenDialog}
         >
-          {" FREE ALL PRISONERS FOREVER (upper management will NOT be happy) "}
+          {" FREE ALL PRISONERS FOREVER (stakeholders will NOT be happy) "}
         </Button>
       )}
 
@@ -139,7 +131,7 @@ export default function BasicGrid() {
                 cellId={cell?.id}
                 cellNumber={cell?.cell_number}
                 isOpen={cell?.opened}
-                rerender={isDialogOpen}
+                prisonBreak={isDialogOpen}
               />
             ) || error}
           </Box>

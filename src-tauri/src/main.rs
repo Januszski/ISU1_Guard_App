@@ -6,15 +6,13 @@ use tauri::Manager;
 
 #[tauri::command]
 fn authenticate_ad(username: String, password: String) -> Result<String, String> {
-    let ldap_url = "ldap://localhost:389"; // Update with your AD server URL
-                                           // let user_dn = format!("CN={},CN=Users,DC=your-domain,DC=com", username); // Update with your AD structure
-    let user_dn = format!("uid={},ou=users,dc=example,dc=com", username); // Matches your successful command
+    let ldap_url = "ldap://localhost:389"; 
+                                           
+    let user_dn = format!("uid={},ou=users,dc=example,dc=com", username); 
 
     log::info!("Attempting to connect to LDAP server at: {}", ldap_url);
     log::info!("Using DN: {}", user_dn);
-    // Attempt to connect to the LDAP server
-    // let mut ldap =
-    //     LdapConn::new(ldap_url).map_err(|e| format!("Failed to connect to LDAP: {}", e))?;
+  
 
     let mut ldap = match LdapConn::new(ldap_url) {
         Ok(conn) => {
@@ -51,18 +49,8 @@ fn main() {
                 .build(),
         )
         .plugin(tauri_plugin_sql::Builder::new().build())
-        .invoke_handler(tauri::generate_handler![authenticate_ad]) // Register the command
+        .invoke_handler(tauri::generate_handler![authenticate_ad]) 
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
 
-// #[tauri::command]
-// fn greet(name: &str) -> String {
-//    format!("Test, {}!", name)
-// }
-
-// fn main() {
-//   tauri::Builder::default()
-//     .run(tauri::generate_context!())
-//     .expect("error while running tauri application");
-// }
