@@ -62,8 +62,9 @@ export default function PrimarySearchAppBar() {
 
   useEffect(() => {
     const getSession = async () => {
-      const val = await store.get("session");
-      if (val) {
+      const session = sessionStorage.getItem("session");
+      console.log("sessionCookie HEADER ", session);
+      if (session) {
         setSignedIn(true);
       } else {
         setSignedIn(false);
@@ -90,9 +91,8 @@ export default function PrimarySearchAppBar() {
   };
 
   const handleMessagesClick = async () => {
-    const val = await store.get("session");
-
-    if (val) {
+    const session = sessionStorage.getItem("session");
+    if (session) {
       setButtonSelected("inbox");
     } else {
       setNotification({
@@ -106,7 +106,8 @@ export default function PrimarySearchAppBar() {
     setAnchorEl(null);
     handleMobileMenuClose();
     if (signedIn) {
-      await store.clear();
+      sessionStorage.removeItem("session");
+
       setSignedIn(false);
       setButtonSelected("signedout");
     } else {

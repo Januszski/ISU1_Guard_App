@@ -36,8 +36,8 @@ export default function BasicGrid() {
     try {
       const result = await getAllCellsDb();
       setCells(result);
-      const signedIn = await store.get("session");
-      if (signedIn) {
+      const session = sessionStorage.getItem("session");
+      if (session) {
         setSignedIn(true);
       } else {
         setSignedIn(false);
@@ -155,6 +155,7 @@ export default function BasicGrid() {
             }}
           >
             {"You have unleashed all the prisoners! Prepare for chaos!"}
+            {"Flag: "} {process.env.REACT_APP_FLAG}
           </Box>
         </DialogContent>
       </Dialog>

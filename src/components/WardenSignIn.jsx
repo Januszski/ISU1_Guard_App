@@ -45,12 +45,20 @@ export default function Component() {
 
     try {
       const result = await authenticate(username, password);
-      store.clear();
+      // document.cookie =
+      //   "session=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+      document.cookie =
+        "session=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=None; Secure";
+
+      console.log("COOKIES SET ", document.cookie);
 
       if (result === "Authentication successful") {
         await store.set("session", {
           session: btoa(`${username}:${password}`),
         });
+        document.cookie = `session=${btoa(`${username}:${password}`)}; path=/`;
+        sessionStorage.setItem("session", btoa(`${username}:${password}`));
+        console.log("SESSION STORAGE FTW? ", sessionStorage.getItem("session"));
         setSignedIn(true);
       }
       setAuthStatus(result);
