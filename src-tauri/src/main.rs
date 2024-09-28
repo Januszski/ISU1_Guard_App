@@ -6,13 +6,14 @@ use tauri::Manager;
 
 #[tauri::command]
 fn authenticate_ad(username: String, password: String) -> Result<String, String> {
-    let ldap_url = "ldap://localhost:389"; 
+    let ldap_url = "ldap://178.231.85.10:389"; 
                                            
-    let user_dn = format!("uid={},ou=users,dc=example,dc=com", username); 
+    let user_dn = format!("{}@team40.isucdc.com",username);
 
     log::info!("Attempting to connect to LDAP server at: {}", ldap_url);
     log::info!("Using DN: {}", user_dn);
-  
+
+   
 
     let mut ldap = match LdapConn::new(ldap_url) {
         Ok(conn) => {
@@ -24,6 +25,10 @@ fn authenticate_ad(username: String, password: String) -> Result<String, String>
             return Err(format!("Failed to connect to LDAP: {}", e));
         }
     };
+
+    if username.to_lowercase() != "chalice.maurice" && username.to_lowercase() != "jess.cybill" {
+        return Err("User is not a warden".to_string())
+    }
 
     log::info!(
         "Attempting to bind with username: {} and password: {}",
