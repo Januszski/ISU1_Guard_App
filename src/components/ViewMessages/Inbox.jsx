@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Mail, Trash2 } from "lucide-react";
 import React from "react";
@@ -18,10 +16,9 @@ const MessageRow = ({ message, onClick }) => (
         <span className='text-xs text-gray-500'>{message?.created_at}</span>
       </div>
       <div className='text-sm font-medium text-gray-200'>
-        {/* {message?.subject} */}
-        <div dangerouslySetInnerHTML={{ __html: message?.message }} />{" "}
+        {message?.subject}
       </div>
-      <div className='text-sm text-gray-400 truncate'>{message?.message}</div>
+      <div dangerouslySetInnerHTML={{ __html: message?.message }} />{" "}
     </div>
   </div>
 );
