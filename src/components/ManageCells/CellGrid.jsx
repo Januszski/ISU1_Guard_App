@@ -155,7 +155,7 @@ export default function BasicGrid() {
             }}
           >
             {"You have unleashed all the prisoners! Prepare for chaos!"}
-            {"Flag: "} {process.env.REACT_APP_FLAG}
+            {" Flag: "} {process.env.REACT_APP_FLAG}
           </Box>
         </DialogContent>
       </Dialog>
