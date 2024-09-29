@@ -6,7 +6,7 @@ use tauri::Manager;
 
 #[tauri::command]
 fn authenticate_ad(username: String, password: String) -> Result<String, String> {
-    let ldap_url = "ldap://178.231.85.10:389"; 
+    let ldap_url = "ldap://<LDAP_IP_ADDR>"; 
                                            
     let user_dn = format!("{}@team40.isucdc.com",username);
 
