@@ -34,7 +34,7 @@ const CameraFeed = ({ id }) => {
             }}
           >
             <source
-              src={`${process.env.REACT_APP_CAMERA_FEED_URI}/ISU1CAM${id}.mp4`}
+              src={`${process.env.REACT_APP_CAMERA_FEED_URI}/ISU1CAM${id}.MP4`}
               type='video/mp4'
             />
             Your browser does not support the video tag.
